@@ -610,9 +610,11 @@ async function fetchstudentsfee(data = null) {
 
         const responseData = await res.json();
 
-        handle_response(responseData);
-
-
+        if (responseData === null || responseData.length === 0) {
+            showToast("No records found", "notify");
+        } else {
+            handle_response(responseData);
+        }
 
     } catch (err) {
         console.error("Error fetching fee details:", err);
@@ -628,8 +630,9 @@ function handle_response(responseData) {
     if (responseData[0].mode === "student_view") {
 
         renderStudentView(responseData);
-        console.trace("render student was called")
-
+        document.getElementById("printbtn").onclick = (event) => {
+            printReceipt(responseData);
+        };
 
     } else {
 
@@ -642,6 +645,8 @@ function handle_response(responseData) {
 }
 
 
+
+
 function renderStudentView(responseData) {
 
     const section = document.getElementById("feecard");
@@ -649,6 +654,9 @@ function renderStudentView(responseData) {
 
     document.getElementById("feepagetable").style.display = "none";
     backbtninfee.style.display = "inline-block";
+    printbtn.style.display = "inline-block";
+    reminderbtn.style.display = "inline-block";
+
 
 
     const student = responseData || [];
@@ -671,9 +679,6 @@ function renderStudentView(responseData) {
         avatarImg.src = student[0].picture || "";
     }
 
-    document.getElementById("monthname").textContent =
-        student[0].month.toUpperCase() ;
-
     document.getElementById("totalFeeDisplay").textContent =
         student[0].fee + " PKR";
 
@@ -681,12 +686,16 @@ function renderStudentView(responseData) {
     const tbody = document.querySelector(".fee-table tbody");
     tbody.innerHTML = "";
 
-    const hasTransactions = student.some(tx => tx.month !== null);
+    const hasTransactions = Array.isArray(student) && student.some(tx => tx.month !== null);
 
     if (!hasTransactions) {
         tbody.innerHTML =
             `<tr><td colspan="6" style="text-align:center;">No transactions found</td></tr>`;
     } else {
+
+
+    document.getElementById("monthname").textContent = student[0].month.toUpperCase();
+
 
         student.forEach(tx => {
             const tr = document.createElement("tr");
@@ -866,122 +875,6 @@ function generalrenderforfee(responseData) {
 }
 
 
-// Student render 
-
-
-
-
-//     responseData.reverse().forEach((s) => {
-//         const row = document.createElement("tr");
-
-//         row.innerHTML = `<td>${s.roll_number}</td>
-//         <td>${s.class_name}</td>
-//         <td>${s.roll_number}</td>
-//         <td>${s.month.toUpperCase()}</td>
-//                 <td style="color:green; font-weight:600;">Rs. ${s.total_fee}</td>
-//                 <td>${s.dues}</td>
-//             <td style="color:#ff392bff; font-weight:300; border-radius:30px; ">Rs. ${s.dues}</td>
-//             `;
-
-//         tbody.appendChild(row);
-//     });
-
-//     const firstrow=tbody.querySelector("tr:first-child");
-//     if (firstrow) {
-//         const duescell=firstrow.querySelector("td:nth-child(7)");
-//         const originalContent=duescell.textContent;
-//       duescell.innerHTML=`
-//       <span style='color:red; font-weight:600'>${originalContent}</span>
-//       <span style='color: black;font-weight:100'>( Current )</span>
-//       `;
-
-// }
-// }
-
-
-// Dashboard functions
-// function updateDashboard() {
-//             document.getElementById('totalStudents').textContent = students.length;
-//             document.getElementById('totalTeachers').textContent = teachers.length;
-//             const totalFees = students.filter(s => s.feeStatus === 'Paid').reduce((acc, s) => acc + s.amount, 0);
-//             document.getElementById('totalFees').textContent = '$' + totalFees;
-
-//             updateFeeChart();
-//         }
-
-//         function updateFeeChart() {
-//             const paid = students.filter(s => s.feeStatus === 'Paid').length;
-//             const pending = students.filter(s => s.feeStatus === 'Pending').length;
-//             const overdue = students.filter(s => s.feeStatus === 'Overdue').length;
-
-//             if (feeChart) feeChart.destroy();
-
-//             const ctx = document.getElementById('feeChart').getContext('2d');
-//             feeChart = new Chart(ctx, {
-//                 type: 'pie',
-//                 data: {
-//                     labels: ['Paid', 'Pending', 'Overdue'],
-//                     datasets: [{
-//                         data: [paid, pending, overdue],
-//                         backgroundColor: ['#ff392bff', '#f59e0b', '#ef4444']
-//                     }]
-//                 },
-//                 options: {
-//                     responsive: true,
-//                     maintainAspectRatio: false
-//                 }
-//             });
-//         }
-
-//         function updatePerformanceCharts() {
-//             // Performance bar chart
-//             if (performanceChart) performanceChart.destroy();
-//             const ctx1 = document.getElementById('performanceChart').getContext('2d');
-//             performanceChart = new Chart(ctx1, {
-//                 type: 'bar',
-//                 data: {
-//                     labels: performanceData.map(p => p.class),
-//                     datasets: [{
-//                         label: 'Average Score',
-//                         data: performanceData.map(p => p.avgScore),
-//                         backgroundColor: '#3b82f6'
-//                     }]
-//                 },
-//                 options: {
-//                     responsive: true,
-//                     maintainAspectRatio: false,
-//                     scales: {
-//                         y: {
-//                             beginAtZero: true,
-//                             max: 100
-//                         }
-//                     }
-//                 }
-//             });
-
-//             // Student count line chart
-//             if (studentCountChart) studentCountChart.destroy();
-//             const ctx2 = document.getElementById('studentCountChart').getContext('2d');
-//             studentCountChart = new Chart(ctx2, {
-//                 type: 'line',
-//                 data: {
-//                     labels: performanceData.map(p => p.class),
-//                     datasets: [{
-//                         label: 'Students',
-//                         data: performanceData.map(p => p.students),
-//                         borderColor: '#10b981',
-//                         tension: 0.4
-//                     }]
-//                 },
-//                 options: {
-//                     responsive: true,
-//                     maintainAspectRatio: false
-//                 }
-//             });
-
-//             renderPerformanceTable();
-//         }
-
 
 
 // ------------------------------
@@ -1007,9 +900,12 @@ function backbtn_in_feepage() {
 
     document.getElementById("feepagetable").style.display = "block";
     document.getElementById("backbtninfee").style.display = "none";
+    printbtn.style.display = "none";
+    reminderbtn.style.display = "none";
 }
 
 function studentcard() {
+    resetFormState();
     document.getElementById("overlay").style.display = "flex";
     document.getElementById("studentForm").style.display = "block";
     document.getElementById("studentForm").scrollIntoView({
@@ -1060,6 +956,7 @@ function closeCard(id) {
     document.getElementById("updateBtn").style.display = "none";}
 }
 
+
 // display student crad---- 
 let data=null
 function displaystudentcard(s) {
@@ -1090,7 +987,7 @@ function displaystudentcard(s) {
     document.getElementById("studentgender").textContent = data.gender.toUpperCase() || "N/A";
     document.getElementById("studentbform").textContent = data.b_form || "N/A";
     document.getElementById("studentenrollmentdate").textContent = data.enrollment_number || "N/A";
-    document.getElementById("studentcontact").textContent = data.contact || "N/A";
+    document.getElementById("studentcontactincard").textContent = data.contact || "N/A";
 
     const deletebtn_incard = document.getElementById("incard_deletebtn");
 
@@ -1101,11 +998,14 @@ function displaystudentcard(s) {
     });
     document.getElementById("edit-btn").addEventListener("click", ()=> {
         startUpdate(data);
+
+    });
     
-});
+    document.getElementById("printStudentcard").onclick = (event) => {
+            printStudentcard(data);
+        };
 
-      
-
+    
 
     const tabs = document.querySelectorAll(".tab-panel");
 
@@ -1194,7 +1094,7 @@ function tab_table(responseData) {
    
          <td>
            <button type="button" class="details-btn" style="background: none; border: none;" >
-                    <img style="height: 25px; width: 25px; border-radius: 50%;" src="https://www.svgrepo.com/show/532387/user-search.svg" alt="">
+                    <img style="height: 25px; width: 25px; border-radius: 0px;" src="https://img.icons8.com/ios7/1200/details-pane.jpg" alt="">
            </button>
            </td>
     `;
@@ -1218,6 +1118,8 @@ function feecardappend(s) {
     });
     document.getElementById("feepagetable").style.display = "none";
     backbtninfee.style.display = "inline-block";
+    printbtn.style.display = "inline-block";
+    reminderbtn.style.display = "inline-block";
     fetchstudentsfee(s)
 
 }
@@ -1232,14 +1134,584 @@ function switchStudentTab(id, el) {
     el.classList.add('active');
 }
 
+function printStudentcard(input) {
+    let data = null;
+    data = input;
+
+    console.log(data)
+
+
+  
+};
 
 
 
-//         // Initialize
-//         // renderStudentTable();
-//         // renderFeeTable();
-//         // renderTeacherTable();
-//         // renderPerformanceTable();
-//         // renderEvents();
-//         // renderSchedules();
-//         // updateDashboard();
+
+function printReceipt(input) {
+    let data = null;
+    data = input;
+    const totalfee = data[0].fee;
+    console.log(totalfee);
+    const totalPaid = data.reduce((sum, tx) => sum + (Number(tx.amount) || 0), 0);
+
+const dues = totalfee - totalPaid;
+
+const time = new Date().toLocaleString('en-US', {day: '2-digit', month: 'long', year : 'numeric', hour : '2-digit', minute: '2-digit'});
+
+const rows = data.map((t, index)=>`
+<tr>
+<td>${index+1}</td>
+<td>${t.month.charAt(0).toUpperCase() + t.month.slice(1)}</td>
+<td>${t.amount}</td>
+<td>${t.date}</td>
+</tr>
+`).join('')
+
+
+    let statusText;
+    let statusClass;
+    if (totalPaid == 0) {
+        statusText  = '✗ Not Paid';
+    statusClass = 'due';
+    }
+
+    else if (totalPaid == totalfee) {
+        statusText  = '✓ Paid in Full';
+    statusClass = 'paid';
+    }
+    else {
+       statusText  = '⚠️ Partially Paid';
+    statusClass = 'partial';
+    }
+
+
+    const recieptHtml = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Fee Receipt – Model School</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Source+Sans+3:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #1c1c1c;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Source Sans 3', sans-serif;
+      padding: 2.5rem;
+    }
+
+    .receipt {
+      width: 460px;
+      background: #ffffff;
+      position: relative;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.5);
+    }
+
+    /* ── HEADER ── */
+    .header {
+      background: #0f2a4a;
+      padding: 32px 36px 28px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* subtle grid texture */
+    .header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+      background-size: 24px 24px;
+    }
+
+    .header-inner {
+      position: relative;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+    }
+
+    .school-emblem {
+      width: 42px;
+      height: 42px;
+      border: 2px solid rgba(255,255,255,0.25);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Playfair Display', serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.9);
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .school-text { flex: 1; padding: 0 16px; }
+
+    .school-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: 0.01em;
+      line-height: 1.2;
+    }
+
+    .school-address {
+      font-size: 11px;
+      color: rgba(255,255,255,0.45);
+      margin-top: 5px;
+      letter-spacing: 0.03em;
+      font-weight: 300;
+    }
+
+    .header-right {
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    .doc-label {
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.4);
+    }
+
+    .doc-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 15px;
+      font-weight: 600;
+      color: #fff;
+      margin-top: 3px;
+    }
+
+    /* gold rule */
+    .rule {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, #c9a84c 30%, #c9a84c 70%, transparent);
+      position: relative;
+    }
+
+    /* ── META STRIP ── */
+    .meta {
+      background: #f7f6f3;
+      padding: 14px 36px;
+      display: flex;
+      gap: 32px;
+      border-bottom: 1px solid #e8e4dc;
+    }
+
+    .meta-item { display: flex; flex-direction: column; gap: 2px; }
+
+    .meta-label {
+      font-size: 8.5px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: #a09880;
+    }
+
+    .meta-value {
+      font-size: 12.5px;
+      font-weight: 600;
+      color: #1a1a1a;
+      letter-spacing: 0.02em;
+    }
+
+    /* ── BODY ── */
+    .body { padding: 28px 36px; }
+
+    /* section heading */
+    .section-label {
+      font-size: 8.5px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: #0f2a4a;
+      margin-bottom: 14px;
+      padding-bottom: 8px;
+      border-bottom: 1.5px solid #0f2a4a;
+    }
+
+    /* student info grid */
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px 24px;
+      margin-bottom: 28px;
+    }
+
+    .info-item { display: flex; flex-direction: column; gap: 3px; }
+    .info-item.span2 { grid-column: 1 / -1; }
+
+    .info-label {
+      font-size: 8.5px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #a09880;
+    }
+
+    .info-value {
+      font-size: 14px;
+      font-weight: 500;
+      color: #1a1a1a;
+      line-height: 1.3;
+    }
+
+    /* ── TABLE ── */
+    .table-section { margin-bottom: 24px; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead th {
+      font-size: 8.5px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #ffffff;
+      background: #0f2a4a;
+      padding: 9px 12px;
+      text-align: left;
+    }
+
+    thead th:first-child { padding-left: 10px; width: 36px; }
+    thead th:last-child { text-align: right; padding-right: 10px; }
+
+    tbody tr:nth-child(even) { background: #f7f6f3; }
+
+    tbody td {
+      font-size: 12.5px;
+      color: #2a2a2a;
+      padding: 10px 12px;
+      border-bottom: 1px solid #ede9e1;
+      font-weight: 400;
+    }
+
+    tbody td:first-child {
+      color: #a09880;
+      font-size: 11px;
+      font-weight: 600;
+      padding-left: 10px;
+    }
+
+    tbody td:last-child {
+      text-align: right;
+      font-weight: 600;
+      color: #1a1a1a;
+      padding-right: 10px;
+    }
+
+    /* ── STATUS + TOTAL ── */
+    .footer-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 36px;
+      background: #f7f6f3;
+      border-top: 1px solid #e8e4dc;
+      border-bottom: 1px solid #e8e4dc;
+    }
+
+    .status-badge {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      padding: 5px 14px;
+      border-radius: 2px;
+    }
+
+    .paid   { background: #e6f4ee; color: #1a6b3c; border: 1px solid #a8d8bc; }
+    .due { background: #fdecea; color: #b52a1a; border: 1px solid #f0b4ae; }
+    .partial{ background: #fef7e6; color: #8a5c0a; border: 1px solid #e8d080; }
+
+    .total-block { text-align: right; }
+
+    .total-label {
+      font-size: 8.5px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #a09880;
+    }
+
+    .total-amount {
+      font-family: 'Playfair Display', serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: #0f2a4a;
+      letter-spacing: 0.01em;
+      margin-top: 1px;
+    }
+
+    /* ── SIGNATURE ── */
+    .sig-row {
+      padding: 24px 36px 20px;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .sig {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 7px;
+      min-width: 130px;
+    }
+
+    .sig-space { height: 28px; }
+
+    .sig-line {
+      width: 100%;
+      height: 1px;
+      background: #1a1a1a;
+    }
+
+    .sig-label {
+      font-size: 8.5px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #a09880;
+    }
+
+    /* ── FOOTER ── */
+    .note {
+      background: #0f2a4a;
+      padding: 11px 36px;
+      font-size: 9.5px;
+      color: rgba(255,255,255,0.35);
+      text-align: center;
+      letter-spacing: 0.05em;
+      font-weight: 300;
+    }
+  </style>
+</head>
+<body>
+
+<div class="receipt">
+
+  <div class="header">
+    <div class="header-inner">
+      <div class="school-emblem">M</div>
+      <div class="school-text">
+        <div class="school-name">Model School</div>
+        <div class="school-address">123 Education Road, Lahore &nbsp;&nbsp;·&nbsp;&nbsp; 042-12345678</div>
+      </div>
+      <div class="header-right">
+        <div class="doc-label">Official</div>
+        <div class="doc-title">Fee Receipt</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="rule"></div>
+
+  <div class="meta">
+    <div class="meta-item">
+      <span class="meta-label">Receipt No.</span>
+      <span class="meta-value">N/A</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Issued on</span>
+      <span class="meta-value">${time}</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">For Month</span>
+      <span class="meta-value">${data[0].month.charAt(0).toUpperCase() + data[0].month.slice(1)}</span>
+    </div>
+  </div>
+
+  <div class="body">
+
+    <div class="section-label">Student Information</div>
+
+    <div class="info-grid">
+      <div class="info-item span2">
+        <span class="info-label">Full Name</span>
+        <span class="info-value">${data[0].name}</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Roll Number</span>
+        <span class="info-value">${data[0].roll_no}</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Class / Section</span>
+        <span class="info-value">${data[0].class}</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">Contact</span>
+        <span class="info-value">${data[0].phone || 'N/A'}</span>
+      </div>
+    </div>
+
+    <div class="table-section">
+      <div class="section-label">Payment Details</div>
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Month</th>
+            <th>Paid On</th>
+            <th>Amount</th>
+          </tr>
+        </thead>
+         <tbody>
+        ${rows}
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <div class="footer-row">
+    <span class="status-badge ${statusClass}">${statusText}</span>
+    <div class="total-block">
+      <div class="total-label">Total Paid</div>
+      <div class="total-amount" style='color: green'>${totalPaid}</div>
+    </div>
+    <div class="total-block">
+      <div class="total-label">Total Dues</div>
+      <div class="total-amount" style='color: red'>${dues}</div>
+    </div>
+  </div>
+
+  <div class="sig-row">
+    <div class="sig">
+      <div class="sig-space"></div>
+      <div class="sig-line"></div>
+      <div class="sig-label">Cashier Signature</div>
+    </div>
+  </div>
+
+  <div class="note">
+    Computer generated receipt &nbsp;·&nbsp; No stamp required &nbsp;·&nbsp; Keep for your records
+  </div>
+
+</div>
+
+</body>
+</html>  `;
+
+  let printWindow = null;
+
+  if (printWindow && !printWindow.closed) {
+      printWindow.close();
+    }
+    
+ printWindow = window.open('', '_blank', 'width=600,height=800');
+printWindow.document.open();
+printWindow.document.write(recieptHtml);
+printWindow.document.close();
+
+
+};
+
+
+
+window.onload = function(){
+    load_charts();
+}
+
+function load_charts(){
+    
+                    var options = {
+                        series:
+                         [{name: 'payment', data: [44, 55, 13, 43, 22]}],
+                        // [44, 55, 13, 43, 22],
+                        chart: {
+                            width: 450,
+                            type:'area',
+
+                        },
+                        xaxis:{
+                            categories: ['Paid', 'Pending', 'Overdue', 'Waived', 'Other']
+                        },
+                        labels: ['Paid', 'Pending', 'Overdue', 'Waived', 'Other'],
+                        responsive: [{
+                            breakpoint: 480,
+                            options: {
+                                chart: {
+                                    width: '100%'
+                                },
+                                legend: {
+                                    position: 'bottom'
+                                }
+                            }
+                        }]
+                    };
+
+                    var chart1 = new ApexCharts(document.getElementById("myChart1"), options);
+                    chart1.render();
+
+
+                    var options = {
+                        series:
+                        //  [{name: 'payment', data: [44, 55, 13, 43, 22]}],
+                        [44, 55, 13, 43, 22],
+                        chart: {
+                            width: 450,
+                            type:'donut',
+                        },
+                        xaxis:{
+                            categories: ['Paid', 'Pending', 'Overdue', 'Waived', 'Other']
+                        },
+                        labels: ['Paid', 'Pending', 'Overdue', 'Waived', 'Other'],
+                        responsive: [{
+                            breakpoint: 480,
+                            options: {
+                                chart: {
+                                    width: '100%'
+                                },
+                                legend: {
+                                    position: 'bottom'
+                                }
+                            }
+                        }]
+                    };
+                    var chart2 = new ApexCharts(document.getElementById("myChart2"), options);
+                    chart2.render();
+                   
+                   
+                    var options = {
+                        series:
+                         [{name: 'payment', data: [44, 55, 13, 43, 22]}],
+                        // [44, 55, 13, 43, 22],
+                        chart: {
+                            width: 450,
+                            type:'bar',
+                        
+                        },
+                        xaxis:{
+                            categories: ['Paid', 'Pending', 'Overdue', 'Waived', 'Other']
+                        },
+                        labels: ['Paid', 'Pending', 'Overdue', 'Waived', 'Other'],
+                        responsive: [{
+                            breakpoint: 480,
+                            options: {
+                                chart: {
+                                    width: '100%'
+                                },
+                                legend: {
+                                    position: 'bottom'
+                                }
+                            }
+                        }]
+                    };
+                    var chart3 = new ApexCharts(document.getElementById("myChart3"), options);
+                    chart3.render();
+
+}

@@ -18,25 +18,28 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
+
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
 </head>
 
 <body>
 
-    
+
     <div id="toast" class="toast"></div>
 
 
     <div class="overlay" id="overlay0">
-    <div id="confirmModal" class="modal">
-        <div class="modal-box">
-            <h3>Confirm Deletion</h3>
-            <p>This action cannot be undone.</p>
-            <div class="modal-actions">
-                <button onclick="closeConfirm()" class="btn cancel">Cancel</button>
-                <button onclick="confirmDelete()" class="btn danger">Delete</button>
+        <div id="confirmModal" class="modal">
+            <div class="modal-box">
+                <h3>Confirm Deletion</h3>
+                <p>This action cannot be undone.</p>
+                <div class="modal-actions">
+                    <button onclick="closeConfirm()" class="btn cancel">Cancel</button>
+                    <button onclick="confirmDelete()" class="btn danger">Delete</button>
+                </div>
             </div>
         </div>
-    </div>
     </div>
 
 
@@ -72,12 +75,20 @@
             <div class="chart-grid">
                 <div class="card">
                     <h3>Fee Status Distribution</h3>
-                    <div class="chart-container">
-                        <canvas id="feeChart"></canvas>
-                    </div>
+                   <div id="myChart1" style="width: max-content;" class="myChart"></div>
                 </div>
                 <div class="card">
+                    <h3>Fee Status Distribution</h3>
+                   <div id="myChart2" class="myChart"></div>
+                </div>
+                <div class="card">
+                    <h3>Fee Status Distribution</h3>
+                   <div id="myChart3" class="myChart"></div>
+                </div>
+               
+                <div class="card">
                     <h3>Recent Activities</h3>
+              
                     <div class="event-list">
                         <div class="event-item">📝 New student enrolled</div>
                         <div class="event-item">💵 Fee payment received</div>
@@ -124,11 +135,20 @@
                             src="https://static.thenounproject.com/png/847983-200.png" alt="">
                         Delete Student
                     </button>
+                    <button class="btn" id="printStudentcard" onclick="btn_check()" >
+                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <polyline points="6 9 6 2 18 2 18 9" />
+                                <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+                                <rect x="6" y="14" width="12" height="8" />
+                            </svg>
+                        Print
+                    </button>
 
                 </div>
             </div>
 
-  <!-- student card for details  -->
+            <!-- student card for details  -->
 
 
             <div id="studentcard" style="max-width:1100px;margin:0 auto; display: none;">
@@ -142,8 +162,9 @@
                                     src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR3fOjNVqsYLz_3u4qAZyKoJyCBuIqCt7zhxw&s"
                                     alt=""></div>
                             <div class="profile-name" id="studentname">Rehan Bhatti</div>
-                            <div class="profile-program" style="color: black; font-size: 18px;" id="studentclass">BS Mathematics · Semester 4</div>
-                            <div class="profile-status" >Active Enrollment</div>
+                            <div class="profile-program" style="color: black; font-size: 18px;" id="studentclass">BS
+                                Mathematics · Semester 4</div>
+                            <div class="profile-status">Active Enrollment</div>
                         </div>
 
                         <div class="profile-stats">
@@ -163,7 +184,7 @@
 
                         <div style="padding:16px 22px;border-bottom:1px solid var(--border)">
                             <div style="display:flex;flex-direction:column;gap:10px">
-                                <div  style="display:flex;align-items:center;gap:10px;font-size:13px">
+                                <div style="display:flex;align-items:center;gap:10px;font-size:13px">
                                     <span
                                         style="width:28px;height:28px;background:#f0f4ff;border:1px solid #e0e7ff;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">📞</span>
                                     <h12 id="studentcontact">N/A</h12>
@@ -173,7 +194,7 @@
                                         style="width:28px;height:28px;background:#f0f4ff;border:1px solid #e0e7ff;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">✉️</span>
                                     <h12 id="studentemail">N/A</h12>
                                 </div>
-                                <div  style="display:flex;align-items:center;gap:10px;font-size:13px">
+                                <div style="display:flex;align-items:center;gap:10px;font-size:13px">
                                     <span
                                         style="width:28px;height:28px;background:#f0f4ff;border:1px solid #e0e7ff;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">📍</span>
                                     <h12 id="studentaddress">N/A</h12>
@@ -184,8 +205,7 @@
                         <div class="profile-actions">
                             <button class="btn " style="justify-content:center">💬 Message</button>
                             <button id="incard_deletebtn" class="btn btn-outline btn-sm"
-                                style="justify-content:center;color:red;border:1px solid red;"
-                                >🗑 Delete</button>
+                                style="justify-content:center;color:red;border:1px solid red;">🗑 Delete</button>
                         </div>
                     </div>
 
@@ -234,7 +254,7 @@
 
                             <div class="detail-item">
                                 <div class="detail-label">Guardian Contact</div>
-                                <div class="detail-value" id="studentcontact">+92 321 0000000</div>
+                                <div class="detail-value" id="studentcontactincard">+92 321 0000000</div>
                             </div>
 
                         </div>
@@ -265,13 +285,13 @@
                                 <span class="tab-icon">📅</span> Attendance
                             </div>
                             <div class="tab-btn" onclick="switchStudentTab('results', this)">
-                                <span class="tab-icon">📊</span> Results 
+                                <span class="tab-icon">📊</span> Results
                             </div>
                             <div class="tab-btn" onclick="switchStudentTab('subjects', this)">
                                 <span class="tab-icon">📚</span> Subjects
                             </div>
                             <div class="tab-btn" onclick="switchStudentTab('remarks', this)">
-                                <span class="tab-icon">💬</span> Remarks 
+                                <span class="tab-icon">💬</span> Remarks
                             </div>
                         </div>
 
@@ -279,17 +299,17 @@
                         <div class="tab-panel" id="tab-idle"></div>
                         <div class="tab-panel" id="tab-transactions">
                             <table id="tab-fee-table" class="tab-fee-table list-table">
-                                    <thead style="width: 100%;">
-                                        <tr style="width: 100%;">
-                                            <th>Name</th>
-                                            <th>Roll no</th>
-                                            <th>Month</th>
-                                            <th class="discount-col">Add. Discount</th>
-                                            <th>Total Paid</th>
-                                            <th>Dues</th>
-                                            <th></th>
-                                        </tr>
-                                    </thead>
+                                <thead style="width: 100%;">
+                                    <tr style="width: 100%;">
+                                        <th>Name</th>
+                                        <th>Roll no</th>
+                                        <th>Month</th>
+                                        <th class="discount-col">Add. Discount</th>
+                                        <th>Total Paid</th>
+                                        <th>Dues</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
                                 <tbody></tbody>
                             </table>
                         </div>
@@ -602,182 +622,182 @@
 
 
             <!-- ------card ------->
-<div id="overlay" class="overlay">
-            <div style="position: relative;" id="studentForm">
-                <button class="close-btn" onclick="closeCard('overlay')">
-                    &times;
-                </button>
-                <h3 id="addlabel">Add New Student</h3>
-                <h3 id="updatelabel" style="display: none;">Update Student</h3>
+            <div id="overlay" class="overlay">
+                <div style="position: relative;" id="studentForm">
+                    <button class="close-btn" onclick="closeCard('overlay')">
+                        &times;
+                    </button>
+                    <h3 id="addlabel">Add New Student</h3>
+                    <h3 id="updatelabel" style="display: none;">Update Student</h3>
 
-                <div class="image-upload-container">
+                    <div class="image-upload-container">
 
-                    <label for="imageInput" class="upload-box">
-                        <img id="previewImage"
-                            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT-HmAlYRaMiTx6PqSGcL9ifkAFxWHVPvhiHQ&s"
-                            alt="Preview">
+                        <label for="imageInput" class="upload-box">
+                            <img id="previewImage"
+                                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT-HmAlYRaMiTx6PqSGcL9ifkAFxWHVPvhiHQ&s"
+                                alt="Preview">
 
-                        <span class="upload-text">Click to upload image</span>
-                    </label>
+                            <span class="upload-text">Click to upload image</span>
+                        </label>
 
-                    <input type="file" id="imageInput" accept="image/png, image/jpeg, image/webp">
-                    
+                        <input type="file" id="imageInput" accept="image/png, image/jpeg, image/webp">
+
+                    </div>
+                    <script>
+                        document.getElementById("imageInput")
+                            .addEventListener("change", function () {
+
+                                const file = this.files[0];
+                                if (!file) return;
+
+                                const reader = new FileReader();
+
+                                reader.onload = function (e) {
+                                    document.getElementById("previewImage").src = e.target.result;
+                                };
+
+                                reader.readAsDataURL(file);
+                            });
+                    </script>
+                    <div class="form-grid">
+
+                        <label style="font-size:16px;">Name
+                            <input type="text" id="studentName" placeholder="Student Name" style="margin:5px 0;">
+                        </label>
+
+                        <label style="font-size:16px;">Date of Birth
+                            <input type="date" id="studentDOB" style="margin:5px 0;">
+                        </label>
+
+                        <label style="font-size:16px;">B-form No
+                            <input type="text" id="bform" maxlength="15" placeholder="12345-1234567-1"
+                                style="margin:5px 0;" required>
+                        </label>
+                        <script>document.getElementById("bform").addEventListener("input", function () {
+
+                                let digits = this.value.replace(/\D/g, ""); // Remove non-digits
+
+                                if (digits.length > 13) {
+                                    digits = digits.slice(0, 13);
+                                }
+
+                                let formatted = "";
+
+                                if (digits.length > 0) {
+                                    formatted = digits.slice(0, 5);
+                                }
+
+                                if (digits.length > 5) {
+                                    formatted += "-" + digits.slice(5, 12);
+                                }
+
+                                if (digits.length > 12) {
+                                    formatted += "-" + digits.slice(12, 13);
+                                }
+
+                                this.value = formatted;
+                            });</script>
+
+                        <label style="font-size:16px;">Gender
+                            <select id="studentGender" required style="margin:5px 0;">
+                                <option value="male">🚹Male</option>
+                                <option value="female">🚺Female</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </label>
+
+                        <label id="classheading" style="font-size:16px;">Class
+                            <select id="addstudentclass" required style="margin:5px 0;">
+                                <option value="9">9</option>
+                                <option value="10">10</option>
+                            </select>
+                        </label>
+
+                        <label style="font-size:16px;">Section
+                            <input type="text" id="section" placeholder="e.g., A" style="margin:5px 0;">
+                        </label>
+
+                        <label id="rollheading" style="font-size:16px;">Roll Number
+                            <input type="text" id="rollNumber" placeholder="e.g., A-123" style="margin:5px 0;">
+                        </label>
+
+                        <label style="font-size:16px;">Session
+                            <input type="text" id="session" placeholder="e.g., 2024-25" style="margin:5px 0;">
+                        </label>
+
+                        <label style="font-size:16px;">Total Fee
+                            <input type="number" id="totalFee" placeholder="e.g., 2000" style="margin:5px 0;">
+                        </label>
+                    </div>
+
+                    <h3 style="font-size:18px;">Father/Guardian info</h3>
+
+                    <div class="form-grid">
+                        <label style="font-size:16px;">Name
+                            <input type="text" id="fatherName" placeholder="Full Name" style="margin:5px 0;">
+                        </label>
+
+
+                        <label style="font-size:16px;">Phone Number
+                            <input type="text" id="phone" placeholder="e.g., 1234567890" style="margin:5px 0;">
+                        </label>
+
+                        <label style="font-size:16px;">Address
+                            <input type="text" id="address" placeholder="Full Address" style="margin:5px 0;">
+                        </label>
+
+                    </div>
+
+                    <button class="btn2 btn-primary" style="background: green;"
+                        onmouseover="this.style.background='darkgreen'" onmouseout="this.style.background='green'"
+                        type="submit" id="addBtn" onclick="addStudent()">Add
+                        Student</button>
+
+                    <button class="btn2 btn-primary" id="updateBtn" style="display:none; background-color: #002fff;"
+                        onclick="updateStudent(event)">Update
+                        Student</button>
                 </div>
-                <script>
-                    document.getElementById("imageInput")
-                        .addEventListener("change", function () {
-
-                            const file = this.files[0];
-                            if (!file) return;
-
-                            const reader = new FileReader();
-
-                            reader.onload = function (e) {
-                                document.getElementById("previewImage").src = e.target.result;
-                            };
-
-                            reader.readAsDataURL(file);
-                        });
-                </script>
-                <div class="form-grid">
-
-                    <label style="font-size:16px;">Name
-                        <input type="text" id="studentName" placeholder="Student Name" style="margin:5px 0;">
-                    </label>
-
-                    <label style="font-size:16px;">Date of Birth
-                        <input type="date" id="studentDOB" style="margin:5px 0;">
-                    </label>
-
-                    <label style="font-size:16px;">B-form No
-                        <input type="text" id="bform" maxlength="15" placeholder="12345-1234567-1" style="margin:5px 0;"
-                            required>
-                    </label>
-                    <script>document.getElementById("bform").addEventListener("input", function () {
-
-                            let digits = this.value.replace(/\D/g, ""); // Remove non-digits
-
-                            if (digits.length > 13) {
-                                digits = digits.slice(0, 13);
-                            }
-
-                            let formatted = "";
-
-                            if (digits.length > 0) {
-                                formatted = digits.slice(0, 5);
-                            }
-
-                            if (digits.length > 5) {
-                                formatted += "-" + digits.slice(5, 12);
-                            }
-
-                            if (digits.length > 12) {
-                                formatted += "-" + digits.slice(12, 13);
-                            }
-
-                            this.value = formatted;
-                        });</script>
-
-                    <label style="font-size:16px;">Gender
-                        <select id="studentGender" required style="margin:5px 0;">
-                            <option value="male">🚹Male</option>
-                            <option value="female">🚺Female</option>
-                            <option value="other">Other</option>
-                        </select>
-                    </label>
-
-                    <label id="classheading" style="font-size:16px;">Class
-                        <select id="addstudentclass" required style="margin:5px 0;">
-                            <option value="9">9</option>
-                            <option value="10">10</option>
-                        </select>
-                    </label>
-
-                    <label style="font-size:16px;">Section
-                        <input type="text" id="section" placeholder="e.g., A" style="margin:5px 0;">
-                    </label>
-
-                    <label id="rollheading" style="font-size:16px;">Roll Number
-                        <input type="text" id="rollNumber" placeholder="e.g., A-123" style="margin:5px 0;">
-                    </label>
-
-                    <label style="font-size:16px;">Session
-                        <input type="text" id="session" placeholder="e.g., 2024-25" style="margin:5px 0;">
-                    </label>
-
-                    <label style="font-size:16px;">Total Fee
-                        <input type="number" id="totalFee" placeholder="e.g., 2000" style="margin:5px 0;">
-                    </label>
-                </div>
-
-                <h3 style="font-size:18px;">Father/Guardian info</h3>
-
-                <div class="form-grid">
-                    <label style="font-size:16px;">Name
-                        <input type="text" id="fatherName" placeholder="Full Name" style="margin:5px 0;">
-                    </label>
-
-
-                    <label style="font-size:16px;">Phone Number
-                        <input type="text" id="phone" placeholder="e.g., 1234567890" style="margin:5px 0;">
-                    </label>
-
-                    <label style="font-size:16px;">Address
-                        <input type="text" id="address" placeholder="Full Address" style="margin:5px 0;">
-                    </label>
-
-                </div>
-
-                <button class="btn2 btn-primary" style="background: green;"
-                    onmouseover="this.style.background='darkgreen'" onmouseout="this.style.background='green'"
-                    type="submit" id="addBtn" onclick="addStudent()">Add
-                    Student</button>
-
-                <button class="btn2 btn-primary" id="updateBtn" style="display:none"
-                    onclick="updateStudent(event)">Update
-                    Student</button>
             </div>
-            </div>
 
 
-          <div class="overlay" id="overlay2" >
-              <div class="card" id="deletestudentscard" style="display: none; position: relative;">
+            <div class="overlay" id="overlay2">
+                <div class="card" id="deletestudentscard" style="display: none; position: relative;">
 
-                <button class="close-btn" onclick="closeCard('overlay2')">
-                    &times;
-                </button>
-                <h3>Delete a Student</h3>
-                <div class="form-grid">
+                    <button class="close-btn" onclick="closeCard('overlay2')">
+                        &times;
+                    </button>
+                    <h3>Delete a Student</h3>
+                    <div class="form-grid">
 
-                    <h3 style="font-size: 16px;"> Class
-                        <select style="margin: 5px 0;" name="status" id="deletestudentclass" required>
+                        <h3 style="font-size: 16px;"> Class
+                            <select style="margin: 5px 0;" name="status" id="deletestudentclass" required>
 
-                            <option value="9">
-                                9
-                            </option>
-                            <option value="10">
-                                10
-                            </option>
-                        </select>
-                    </h3>
-                    <h3 style="font-size: 16px"> Section
-                        <input style="margin: 5px 0;" type="text" id="Section" placeholder="e.g., A">
-                    </h3>
-                    <h3 style="font-size: 16px"> Roll Number
-                        <input style="margin: 5px 0;" type="text" id="Rollnumber" placeholder="e.g., A-123">
-                    </h3>
+                                <option value="9">
+                                    9
+                                </option>
+                                <option value="10">
+                                    10
+                                </option>
+                            </select>
+                        </h3>
+                        <h3 style="font-size: 16px"> Section
+                            <input style="margin: 5px 0;" type="text" id="Section" placeholder="e.g., A">
+                        </h3>
+                        <h3 style="font-size: 16px"> Roll Number
+                            <input style="margin: 5px 0;" type="text" id="Rollnumber" placeholder="e.g., A-123">
+                        </h3>
+                    </div>
+                    <button class="btn2 btn-primary" style="background: #991b1b;"
+                        onmouseover="this.style.background='darkred'" onmouseout="this.style.background='#991b1b'"
+                        onclick="openConfirm()">Delete
+                        Student</button>
+                    <button class="btn2 btn-primary" type="button" id="canceldeleteBtn"
+                        style="display:none; background: #0044d6" onclick="canceldelete()">
+                        Cancel Delete
+                    </button>
+
                 </div>
-                <button class="btn2 btn-primary" style="background-color: #991b1b;"
-                    onmouseover="this.style.background='darkred'" onmouseout="this.style.background='#991b1b'"
-                    onclick="openConfirm()">Delete
-                    Student</button>
-                <button class="btn2 btn-primary" type="button" id="canceldeleteBtn"
-                    style="display:none; background: #0044d6" onclick="canceldelete()">
-                    Cancel Delete
-                </button>
-
             </div>
-          </div>
         </div>
 
         <!-- students list page  -->
@@ -963,7 +983,7 @@
                 </select>
                 <input style="margin: 5px 20px; width:30%" id="feerollfilter" placeholder="Roll num (Optional)">
 
-                <button onclick="fetchstudentsfee()" class="btn btn-primary">
+                <button onclick="fetchstudentsfee()" style="background-color: #002fff;" class="btn2 btn-primary">
                     Refresh
                 </button>
 
@@ -976,7 +996,7 @@
                         <button id="backbtninfee" style="display: none;" class="btn" onclick="backbtn_in_feepage()">
                             ⬉ Back
                         </button>
-                        <button class="btn">
+                        <button id="printbtn" class="btn" style="display: none;" >
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                 stroke-width="2">
                                 <polyline points="6 9 6 2 18 2 18 9" />
@@ -985,7 +1005,7 @@
                             </svg>
                             Print
                         </button>
-                        <button class="btn">
+                        <button id="reminderbtn" style="display: none;" class="btn">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                 stroke-width="2">
                                 <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
@@ -993,13 +1013,12 @@
                             </svg>
                             Send Reminder
                         </button>
-                        <button class="btn">Show Advance Fee</button>
                     </div>
                 </div>
 
+
                 <div class="main" id="feecard" style="display: none;">
                     <div class="left-col">
- 
                         <div class="profile-card">
                             <div class="avatar-wrap">
                                 <div class="avatar"><img
@@ -1007,7 +1026,7 @@
                                         style="height: 100px; width: 100px; border-radius: 20px" alt=""></div>
                             </div>
                             <div class="profile-info">
-                                <h2 id="nameofstudent">Ayesha Bibi <span class="tag">PARENT</span></h2>
+                                <h2 id="nameofstudent">Ayesha Bibi </h2>
                                 <div class="sub" id="rollofstudent">ID: AB-0042 &nbsp;|&nbsp; Flat 45 Block B
                                     Lahore
                                 </div>
@@ -1025,9 +1044,9 @@
                                 <div class="phone">03217654321</div>
                             </div>
                             <div class="total-fee">
-                                    <div class="amount" id="totalFeeDisplay">81,331 PKR</div>
-                                    <div class="label">Total Fee</div>
-                                </div>
+                                <div class="amount" id="totalFeeDisplay">81,331 PKR</div>
+                                <div class="label">Total Fee</div>
+                            </div>
                         </div>
 
                         <div class="student-card">
@@ -1049,7 +1068,6 @@
                                             <th class="discount-col">Add. Discount</th>
                                             <th>Total Paid</th>
                                             <th>Date</th>
-
                                         </tr>
                                     </thead>
                                     <tbody></tbody>
@@ -1076,14 +1094,13 @@
                     </div>
                 </div>
             </div>
-            <!-- ------------card -----  -->
+
+            <!--------card--------->
 
             <div class="card" id="feepagetable" style="display: block; border-radius: 30px;">
                 <table id="generalfeeTable" class="fee-table">
                 </table>
             </div>
-
-
         </div>
 
 
@@ -1180,9 +1197,8 @@
     </div>
 
 
-    <script src="{{url_for('static', filename='script.js')}}">
+    <script src="{{url_for('static', filename='script.js')}}"></script>
 
-    </script>
 
     <div id="loaderOverlay" style="display:none;">
         <div class="spinner"></div>

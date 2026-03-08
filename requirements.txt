@@ -1,3 +1,10 @@
 flask
 flask_cors
 cloudinary
+venv/
+dist/
+build/
+*.spec
+__pycache__/
+*.pyc
+school.db   

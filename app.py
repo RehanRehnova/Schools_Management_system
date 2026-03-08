@@ -1,4 +1,12 @@
-from database import get_connection
+import sys
+import os
+
+def resource_path(relative_path):
+    if hasattr(sys, '_MEIPASS'):
+        return os.path.join(sys._MEIPASS, relative_path)
+    return os.path.join(os.path.abspath("."), relative_path)
+
+
 import cloudinary
 import cloudinary.uploader
 from flask import Flask, request, jsonify, render_template, Response, url_for
@@ -6,7 +14,8 @@ from flask_cors import CORS
 import json
 import traceback
 from services import add_student, get_students, get_student, update_student, delete_student,  fee_details,  fee_report, add_fee_basic
-app = Flask(__name__)
+app = Flask(__name__, template_folder=resource_path('templates'),
+            static_folder=resource_path('static'))
 
 CORS(app)
 
@@ -16,10 +25,6 @@ cloudinary.config(
     api_key="112842994958122",
     api_secret="qGiPvNxI2gddK2QfGbMhEUyTpbM"
 )
-
-
-
-
 
 # add student func
 @app.route('/students', methods=['POST'])
