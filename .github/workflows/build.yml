@@ -9,9 +9,11 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
           python-version: '3.12'
 
@@ -22,17 +24,42 @@ jobs:
         run: pip install pyinstaller
 
       - name: Build EXE
-        run: pyinstaller --onefile --noconsole --add-data "templates;templates" --add-data "static;static" --add-data "static/assets/images;static/assets/images" --hidden-import flask --hidden-import sqlite3 --hidden-import database --hidden-import services --hidden-import init_db --hidden-import cloudinary --hidden-import cloudinary.uploader app.py
+        run: |
+          pyinstaller --onefile --noconsole `
+          --add-data "templates;templates" `
+          --add-data "static;static" `
+          --add-data "static/assets/images;static/assets/images" `
+          --hidden-import flask `
+          --hidden-import sqlite3 `
+          --hidden-import database `
+          --hidden-import services `
+          --hidden-import init_db `
+          --hidden-import cloudinary `
+          --hidden-import cloudinary.uploader `
+          app.py
 
       - name: Get version
         id: get_version
-        run: echo "VERSION=$(cat version.txt)" >> $env:GITHUB_OUTPUT
+        shell: bash
+        run: |
+          VERSION=$(cat version.txt)
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+          echo "Building version $VERSION"
 
       - name: Create Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ steps.get_version.outputs.VERSION }}
           name: Release v${{ steps.get_version.outputs.VERSION }}
+          body: |
+            ## School Management System
+            Version ${{ steps.get_version.outputs.VERSION }}
+            
+            ### Installation
+            1. Download app.exe
+            2. Place school.db next to app.exe
+            3. Double click app.exe
           files: dist/app.exe
+          make_latest: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
