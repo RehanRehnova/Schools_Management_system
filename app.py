@@ -234,7 +234,7 @@ def inject_user():
 
 if __name__=="__main__":
 	
-	update_thread = threading.Thread(target=check_for_updates)
+    update_thread = threading.Thread(target=check_for_updates)
     update_thread.daemon = True
     update_thread.start()
     
