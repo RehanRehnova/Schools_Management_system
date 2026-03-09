@@ -1,4 +1,4 @@
-name: Build Windows EXE
+name: Build and Release Windows EXE
 
 on:
   push:
@@ -24,8 +24,15 @@ jobs:
       - name: Build EXE
         run: pyinstaller --onefile --noconsole --add-data "templates;templates" --add-data "static;static" --add-data "static/assets/images;static/assets/images" --hidden-import flask --hidden-import sqlite3 --hidden-import database --hidden-import services --hidden-import init_db --hidden-import cloudinary --hidden-import cloudinary.uploader app.py
 
-      - name: Upload EXE
-        uses: actions/upload-artifact@v4
+      - name: Get version
+        id: get_version
+        run: echo "VERSION=$(cat version.txt)" >> $env:GITHUB_OUTPUT
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
         with:
-          name: SchoolManagementSystem-Windows
-          path: dist/app.exe
+          tag_name: v${{ steps.get_version.outputs.VERSION }}
+          name: Release v${{ steps.get_version.outputs.VERSION }}
+          files: dist/app.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
