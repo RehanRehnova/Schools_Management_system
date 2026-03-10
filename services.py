@@ -67,10 +67,6 @@ def add_enrollments(data, id):
 
     return True
 
-    
-
-
-
 
 def add_student(data):
 
@@ -124,26 +120,35 @@ def get_students(class_name):
     sr.address,
     e.section,
     e.roll_number,
-    e.class_name
+    e.class_name,
+    e.total_fee,
+    e.created_at AS enroll_date
     FROM enrollments e
     INNER JOIN students_record sr
     ON e.student_id = sr.id
     WHERE e.class_name = ?""", (class_name,)).fetchall()
     conn.close()
     return [dict(row) for row in students_data]
+    
 
 def get_student(class_name, roll_number):
     conn = get_connection()
     cursor = conn.cursor()
     students_data= cursor.execute("""
     SELECT
-    sr.full_name,
+     sr.full_name,
     sr.father_name,
     sr.dob,
+    sr.b_form,
     sr.gender,
+    sr.photo,
+    sr.contact,
+    sr.address,
     e.section,
     e.roll_number,
-    e.class_name
+    e.class_name,
+    e.total_fee,
+    e,created_at AS enroll_date
     FROM enrollments e
     INNER JOIN students_record sr
     ON e.student_id = sr.id
@@ -165,8 +170,8 @@ def delete_student(class_name, roll_number):
     conn=get_connection()
     try:
         cursor=conn.cursor()
-        cursor.execute("DELETE FROM enrollments WHERE student_id=?", (id_value))
-        cursor.execute("DELETE FROM students_record WHERE id=?", (id_value))
+        cursor.execute("DELETE FROM enrollments WHERE student_id=?", (id_value,))
+        cursor.execute("DELETE FROM students_record WHERE id=?", (id_value,))
         conn.commit()
     except Exception as e:
         conn.rollback()
@@ -582,7 +587,7 @@ CREATE UNIQUE INDEX uq_active_class_roll
 
     
 if __name__=="__main__":
-    result = fee_report({"class_name": "9", "roll_number": "124"})
+    result = delete_student('9', '123')
     print(result)
 
 

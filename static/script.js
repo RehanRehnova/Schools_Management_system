@@ -229,12 +229,13 @@ function renderStudents() {
    
          <td>
            <button type="button" class="card-btn" style="background: none; border: none;" >
-                    <img style="height: 25px; width: 25px; border-radius: 50%;" src="https://www.svgrepo.com/show/532387/user-search.svg" alt="">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#020000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-user-circle"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /><path d="M9 10a3 3 0 1 0 6 0a3 3 0 1 0 -6 0" /><path d="M6.168 18.849a4 4 0 0 1 3.832 -2.849h4a4 4 0 0 1 3.834 2.855" /></svg>
            </button>
            </td>
            <td>
            <button type="button" style="background: none; border: none; color: red;" onclick="delete_students(${index})">
-                    <img style="height: 25px; width: 25px; border-radius: 50%; filter: brightness(0)  invert(20%);" src="https://cdn-icons-png.flaticon.com/512/7709/7709786.png" alt="">
+                  
+                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#a50000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-trash"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 7l16 0" /><path d="M10 11l0 6" /><path d="M14 11l0 6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
            </button>
            </td>
     `;
@@ -391,33 +392,17 @@ function resetFormState() {
     closeCard("update_reset");
 }
 
+// add fee btn
+
+function addfee_fromcard(s){
+	
+	showToast("Feature coming soon", "notify")
+	
+	
+	}
+
 
 // cancel button func-------
-
-function cancelUpdate() {
-
-    editingIndex = null;
-
-    document.getElementById("studentName").value = "";
-    document.getElementById("addstudentclass").value = "";
-    document.getElementById("section").value = "";
-    document.getElementById("rollNumber").value = "";
-    document.getElementById("fatherName").value = "";
-    document.getElementById("phone").value = "";
-
-    document.getElementById("updateBtn").style.display = "none";
-    document.getElementById("cancelBtn").style.display = "none";
-    document.getElementById("updatelabel").style.display = "none";
-    document.getElementById("addBtn").style.display = "inline-block";
-    document.getElementById("addlabel").style.display = "inline-block";
-    document.getElementById("studentForm").style.border = "none";
-    document.getElementById("addstudentclass").style.display = "inline-block";
-    document.getElementById("rollNumber").style.display = "inline-block";
-    document.getElementById("classheading").style.display = "inline-block";
-    document.getElementById("rollheading").style.display = "inline-block";
-
-    showToast("Update cancelled", "notify");
-}
 
 function canceldelete() {
 
@@ -452,7 +437,7 @@ function addfee() {
     };
 
     if (!feedata.roll_number || !feedata.class_name || !feedata.section || !feedata.paid_on || !feedata.month || !feedata.amount || !feedata.dues) {
-        showToast("Fill the fields first", "notify")
+        showToast("Fill the fields first", "error")
         return;
     }
 
@@ -976,6 +961,7 @@ function displaystudentcard(s) {
     });
 
     document.getElementById("studentavatar").src = data.photo || "N/A";
+    document.getElementById("feeincard").textContent = "Rs."+data.total_fee || "N/A";
     document.getElementById("studentname").textContent = data.full_name || "N/A";
     document.getElementById("studentclass").textContent = "Class:" + data.class_name || "N/A";
     document.getElementById("studentcontact").textContent = data.contact || "N/A";
@@ -986,7 +972,7 @@ function displaystudentcard(s) {
     document.getElementById("studentdob").textContent = data.dob || "N/A";
     document.getElementById("studentgender").textContent = data.gender.toUpperCase() || "N/A";
     document.getElementById("studentbform").textContent = data.b_form || "N/A";
-    document.getElementById("studentenrollmentdate").textContent = data.enrollment_number || "N/A";
+    document.getElementById("studentenrollmentdate").textContent = data.enroll_date || "N/A";
     document.getElementById("studentcontactincard").textContent = data.contact || "N/A";
 
     const deletebtn_incard = document.getElementById("incard_deletebtn");
@@ -996,8 +982,14 @@ function displaystudentcard(s) {
         openConfirm(data)
         
     });
+    
     document.getElementById("edit-btn").addEventListener("click", ()=> {
         startUpdate(data);
+
+    });
+    
+    document.getElementById("add-fee-btn").addEventListener("click", ()=> {
+        addfee_fromcard(data);
 
     });
     
@@ -1094,7 +1086,7 @@ function tab_table(responseData) {
    
          <td>
            <button type="button" class="details-btn" style="background: none; border: none;" >
-                    <img style="height: 25px; width: 25px; border-radius: 0px;" src="https://img.icons8.com/ios7/1200/details-pane.jpg" alt="">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-info-square-rounded"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 9h.01" /><path d="M11 12h1v4h1" /><path d="M12 3c7.2 0 9 1.8 9 9c0 7.2 -1.8 9 -9 9c-7.2 0 -9 -1.8 -9 -9c0 -7.2 1.8 -9 9 -9" /></svg>
            </button>
            </td>
     `;
@@ -1135,13 +1127,7 @@ function switchStudentTab(id, el) {
 }
 
 function printStudentcard(input) {
-    let data = null;
-    data = input;
-
-    console.log(data)
-
-
-  
+    showToast("Feature coming soon", "notify")
 };
 
 
@@ -1620,7 +1606,9 @@ printWindow.document.close();
 
 };
 
-
+function msg_func(){
+	showToast("Feature coming soon", "notify")
+	}
 
 window.onload = function(){
     load_charts();

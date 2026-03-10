@@ -178,8 +178,8 @@
                                 <div class="ps-label">CGPA</div>
                             </div>
                             <div class="profile-stat">
-                                <div  class="ps-val" style="color: red;">Rs<h3 id="feeincard"></h3></div>
-                                <div class="ps-label">Due</div>
+                                <div  class="ps-val" id="feeincard" style="color: red; font-weight: 400;"></div>
+                                <div class="ps-label">Total Fee</div>
                             </div>
                         </div>
 
@@ -204,7 +204,7 @@
                         </div>
 
                         <div class="profile-actions">
-                            <button class="btn " style="justify-content:center">💬 Message</button>
+                            <button class="btn" onclick="msg_func()" style="justify-content:center">💬 Message</button>
                             <button id="incard_deletebtn" class="btn btn-outline btn-sm"
                                 style="justify-content:center;color:red;border:1px solid red;">🗑 Delete</button>
                         </div>
@@ -217,9 +217,15 @@
                                 <div class="card-label" style="font-size:20px;">Information</div>
                                 <div class="card-title">General Details</div>
                             </div>
+                            <div>
                             <button id="edit-btn"
-                                style="box-shadow: 0 6px 4px rgba(185, 185, 185, 0.5); border: 1px solid rgb(214, 214, 214);"
-                                class="btn"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-edit"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" /><path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415" /><path d="M16 5l3 3" /></svg>Edit</button>
+                                style="box-shadow: 0 2px 4px rgba(185, 185, 185, 0.5); border: 1px solid rgb(214, 214, 214);"
+                                class="btn"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-edit"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" /><path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415" /><path d="M16 5l3 3" /></svg>
+                                Edit</button>
+                             <button id="add-fee-btn"
+                                style="box-shadow: 0 2px 4px rgba(185, 185, 185, 0.5); border: 1px solid rgb(214, 214, 214);"
+                                class="btn"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-plus-icon lucide-circle-plus"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/><path d="M12 8v8"/></svg>
+                                Add Fee</button></div>
                         </div>
 
                         <div class="details-grid">
@@ -305,6 +311,7 @@
                                         <th>Name</th>
                                         <th>Roll no</th>
                                         <th>Month</th>
+                                        <th>Discount</th>
                                         <th>Total Paid</th>
                                         <th>Dues</th>
                                         <th></th>
@@ -602,7 +609,7 @@
                 <table id="studentTable">
                     <thead>
                         <tr>
-                            <th style="border-top-left-radius: 20px;">Name</th>
+                            <th style="border-top-left-radius: 20px;" >Name</th>
                             <th>Class</th>
                             <th>Section</th>
                             <th>Roll number</th>

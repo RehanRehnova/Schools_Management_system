@@ -60,7 +60,7 @@
   --shadow-xs:  0 1px 3px rgba(11,15,26,0.06), 0 1px 2px rgba(11,15,26,0.04);
   --shadow-sm:  0 2px 8px rgba(11,15,26,0.08), 0 1px 3px rgba(11,15,26,0.05);
   --shadow-md:  0 6px 24px rgba(11,15,26,0.10), 0 2px 8px rgba(11,15,26,0.06);
-  --shadow-lg:  0 16px 48px rgba(11,15,26,0.14), 0 4px 16px rgba(11,15,26,0.08);
+  --shadow-lg:  0 8px 48px rgba(11,15,26,0.14), 0 4px 8px rgba(11,15,26,0.08);
   --shadow-blue:0 8px 32px rgba(47, 86, 232, 0.24);
 
   /* Motion */
@@ -80,8 +80,9 @@ body {
   line-height: 1.6;
   color: var(--text);
   background: none;
-  background-image: url(https://static.vecteezy.com/ti/gratis-vector/t1/18880039-abstracte-3d-moderne-vierkante-achtergrond-witte-en-grijze-geometrische-patroontextuur-kunst-illustratie-gratis-vector.jpg) ;
+  background-image: url(https://media.istockphoto.com/id/1473215899/vector/tech-grid.jpg?s=612x612&w=0&k=20&c=de_JWOI4pcjQFlvBOW4I8jeAqXhRmP5_olQPmTw3UHA=) ;
   background-repeat: repeat;
+  background-size: auto;
   display: flex;
   min-height: 100vh;
   overflow-x: hidden;
