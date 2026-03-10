@@ -12,6 +12,7 @@ import threading
 import webbrowser
 from threading import Timer
 
+import platform
 import cloudinary
 import cloudinary.uploader
 from flask import Flask, request, jsonify, render_template, Response, url_for
@@ -26,57 +27,57 @@ CURRENT_VERSION = "1.0.0"
 GITHUB_USER = "RehanRehnova"
 GITHUB_REPO = "Schools_Management_system"
 VERSION_URL = f"https://raw.githubusercontent.com/{GITHUB_USER}/{GITHUB_REPO}/main/version.txt"
-DOWNLOAD_URL = f"https://github.com/{GITHUB_USER}/{GITHUB_REPO}/releases/latest/download/app.exe"
 
-def check_for_updates():
-    try:
-        # Check latest version from GitHub
-        response = requests.get(VERSION_URL, timeout=5)
-        latest_version = response.text.strip()
-
-        if latest_version != CURRENT_VERSION:
-            print(f"New version {latest_version} found! Updating...")
-            download_and_update(latest_version)
-        else:
-            print("App is up to date!")
-    except:
-        # No internet? Just run normally
-        print("Offline mode - skipping update check")
+def get_download_url():
+    base = f"https://github.com/{GITHUB_USER}/{GITHUB_REPO}/releases/latest/download"
+    
+    system = platform.system()
+    
+    if system == "Windows":
+        return f"{base}/app.exe"
+    elif system == "Linux":
+        return f"{base}/app"
+    elif system == "Darwin":  # Mac
+        return f"{base}/app-mac"
+    else:
+        return None
 
 def download_and_update(new_version):
     try:
+        download_url = get_download_url()
+        
+        if not download_url:
+            print("Unsupported OS!")
+            return
+            
         exe_path = sys.executable
         new_exe_path = exe_path + ".new"
         backup_path = exe_path + ".backup"
 
-        # Download new version
-        print("Downloading update...")
-        response = requests.get(DOWNLOAD_URL, stream=True, timeout=30)
+        print(f"Downloading update for {platform.system()}...")
+        response = requests.get(download_url, stream=True, timeout=30)
         
         with open(new_exe_path, 'wb') as f:
             for chunk in response.iter_content(chunk_size=8192):
                 f.write(chunk)
 
-        # Backup old version
         if os.path.exists(backup_path):
             os.remove(backup_path)
         os.rename(exe_path, backup_path)
-
-        # Replace with new version
         os.rename(new_exe_path, exe_path)
 
+        # Make executable on Linux
+        if platform.system() == "Linux":
+            os.chmod(exe_path, 0o755)
+
         print(f"Updated to {new_version}! Restarting...")
-        
-        # Restart app
         subprocess.Popen([exe_path])
         sys.exit()
 
     except Exception as e:
         print(f"Update failed: {e}")
-        # Restore backup if update failed
         if os.path.exists(backup_path):
             os.rename(backup_path, exe_path)
-
 
 #for static files path
 
