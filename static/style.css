@@ -79,7 +79,9 @@ body {
   font-size: 14px;
   line-height: 1.6;
   color: var(--text);
-  background: var(--bg);
+  background: none;
+  background-image: url(https://static.vecteezy.com/ti/gratis-vector/t1/18880039-abstracte-3d-moderne-vierkante-achtergrond-witte-en-grijze-geometrische-patroontextuur-kunst-illustratie-gratis-vector.jpg) ;
+  background-repeat: repeat;
   display: flex;
   min-height: 100vh;
   overflow-x: hidden;
