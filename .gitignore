@@ -5,7 +5,5 @@ build/
 __pycache__/
 *.pyc
 *.pyo
-tempCodeRunnerFile.py
-db_testing.py
-card.html
 .env
+school.db

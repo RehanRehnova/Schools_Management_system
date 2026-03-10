@@ -1,5 +1,8 @@
 from database import get_connection
+import sys
 import cloudinary
+import webbrowser
+from threading import Timer
 import cloudinary.uploader
 from flask import Flask, request, jsonify, render_template, Response, url_for
 from flask_cors import CORS
@@ -158,4 +161,7 @@ def inject_user():
     return dict(ASSETS=url_for('static', filename='assets/')) 
 
 if __name__=="__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+	
+	if getattr(sys, 'frozen', False):
+	    Timer(1.5, lambda: webbrowser.open('http://127.0.0.1:5000')).start()
+	app.run(host="0.0.0.0", port=5000, debug = False )
