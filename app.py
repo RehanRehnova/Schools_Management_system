@@ -1,11 +1,4 @@
-import sys
-import os
-import requests
-import subprocess
-import threading
-import webbrowser
-from threading import Timer
-import platform
+from database import get_connection
 import cloudinary
 import cloudinary.uploader
 from flask import Flask, request, jsonify, render_template, Response, url_for
@@ -13,91 +6,9 @@ from flask_cors import CORS
 import json
 import traceback
 from services import add_student, get_students, get_student, update_student, delete_student,  fee_details,  fee_report, add_fee_basic
-
-#For auto update
-
-CURRENT_VERSION = "1.0.0"
-GITHUB_USER = "RehanRehnova"
-GITHUB_REPO = "Schools_Management_system"
-VERSION_URL = f"https://raw.githubusercontent.com/{GITHUB_USER}/{GITHUB_REPO}/main/version.txt"
-
-def get_download_url():
-    base = f"https://github.com/{GITHUB_USER}/{GITHUB_REPO}/releases/latest/download"
-    
-    system = platform.system()
-    
-    if system == "Windows":
-        return f"{base}/app.exe"
-    elif system == "Linux":
-        return f"{base}/app"
-    elif system == "Darwin":  # Mac
-        return f"{base}/app-mac"
-    else:
-        return None
-        
-        
-def check_for_updates():
-	try:
-		response= requests.get(VERSION_URL, timeout=5)
-		latest_version= response.text.strip()
-		if latest_version != CURRENT_VERSION:
-			download_and_update(latest_version)
-	except:
-		pass
-
-def download_and_update(new_version):
-    try:
-        download_url = get_download_url()
-        
-        if not download_url:
-            print("Unsupported OS!")
-            return
-            
-        exe_path = sys.executable
-        new_exe_path = exe_path + ".new"
-        backup_path = exe_path + ".backup"
-
-        print(f"Downloading update for {platform.system()}...")
-        response = requests.get(download_url, stream=True, timeout=30)
-        
-        with open(new_exe_path, 'wb') as f:
-            for chunk in response.iter_content(chunk_size=8192):
-                f.write(chunk)
-
-        if os.path.exists(backup_path):
-            os.remove(backup_path)
-        os.rename(exe_path, backup_path)
-        os.rename(new_exe_path, exe_path)
-
-        # Make executable on Linux
-        if platform.system() == "Linux":
-            os.chmod(exe_path, 0o755)
-
-        print(f"Updated to {new_version}! Restarting...")
-        subprocess.Popen([exe_path])
-        sys.exit()
-
-    except Exception as e:
-        print(f"Update failed: {e}")
-        if os.path.exists(backup_path):
-            os.rename(backup_path, exe_path)
-            
-    
-def resource_path(relative_path):
-    if hasattr(sys, '_MEIPASS'):
-        return os.path.join(sys._MEIPASS, relative_path)
-    return os.path.join(os.path.abspath("."), relative_path)
-
-#for static files path
-
-app = Flask(__name__, template_folder=resource_path('templates'),
-            static_folder=resource_path('static'))
+app = Flask(__name__)
 
 CORS(app)
-
-
-
-
 
 # cloudinary configuration 
 cloudinary.config(
@@ -105,6 +16,10 @@ cloudinary.config(
     api_key="112842994958122",
     api_secret="qGiPvNxI2gddK2QfGbMhEUyTpbM"
 )
+
+
+
+
 
 # add student func
 @app.route('/students', methods=['POST'])
@@ -243,12 +158,4 @@ def inject_user():
     return dict(ASSETS=url_for('static', filename='assets/')) 
 
 if __name__=="__main__":
-	
-    update_thread = threading.Thread(target=check_for_updates)
-    update_thread.daemon = True
-    update_thread.start()
-    
-    Timer(1.5, lambda: webbrowser.open('http://127.0.0.1:5000')).start()
     app.run(host="0.0.0.0", port=5000, debug=True)
-
-
