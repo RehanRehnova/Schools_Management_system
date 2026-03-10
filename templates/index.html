@@ -25,6 +25,61 @@
 
 <body>
 
+<div id="updateBar" style="display:none;">
+    <div style="
+        position:fixed;
+        top:20px;
+        right:20px;
+        background:#1a1a2e;
+        border:1px solid #4361ee;
+        border-left:4px solid #4361ee;
+        color:white;
+        padding:15px 20px;
+        border-radius:10px;
+        z-index:9999;
+        box-shadow:0 5px 20px rgba(67,97,238,0.3);
+        min-width:300px;
+        animation: slideIn 0.3s ease;
+    ">
+        <div style="display:flex; align-items:center; margin-bottom:10px;">
+            <span style="
+                background:#4361ee;
+                padding:4px 10px;
+                border-radius:20px;
+                font-size:11px;
+                font-weight:bold;
+                margin-right:10px;
+            ">NEW UPDATE</span>
+            <span style="color:#aaa; font-size:12px;">A new version is available</span>
+        </div>
+        <p style="margin-bottom:12px; font-size:14px; color:#eee;">
+            🚀 Update now to get the latest features and fixes!
+        </p>
+        <div style="display:flex; gap:10px;">
+            <button onclick="doUpdate()" style="
+                flex:1;
+                background:#4361ee;
+                color:white;
+                border:none;
+                padding:8px;
+                border-radius:6px;
+                cursor:pointer;
+                font-weight:bold;
+                font-size:13px;
+            ">⬆️ Update Now</button>
+            <button onclick="document.getElementById('updateBar').style.display='none'" style="
+                background:transparent;
+                color:#aaa;
+                border:1px solid #333;
+                padding:8px 15px;
+                border-radius:6px;
+                cursor:pointer;
+                font-size:13px;
+            ">Later</button>
+        </div>
+    </div>
+</div>
+
 
     <div id="toast" class="toast"></div>
 

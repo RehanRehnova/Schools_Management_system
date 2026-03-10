@@ -1703,3 +1703,32 @@ function load_charts(){
                     chart3.render();
 
 }
+
+
+// Checks for update when page loads
+window.addEventListener('load', function() {
+    fetch('/check-update')
+    .then(r => r.json())
+    .then(data => {
+        if(data.update_available) {
+            document.getElementById('updateBar').style.display = 'block';
+        }
+    })
+    .catch(() => {}); // No internet? Skip silently
+});
+
+function doUpdate() {
+    // Change bar to show downloading message
+    document.getElementById('updateBar').innerHTML = `
+        ⏳ Downloading update... 
+        Please wait, app will restart automatically.
+    `;
+    
+    // Tell Flask to start downloading
+    fetch('/do-update')
+    .then(r => r.json())
+    .then(data => {
+        console.log(data.message);
+    })
+    .catch(() => {});
+}

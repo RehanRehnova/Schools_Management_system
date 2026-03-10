@@ -1,5 +1,8 @@
 from database import get_connection
 import sys
+import requests
+import platform
+import subprocess
 import cloudinary
 import webbrowser
 from threading import Timer
@@ -13,14 +16,78 @@ app = Flask(__name__)
 
 CORS(app)
 
+CURRENT_VERSION = "1.0.2"
+GITHUB_USER = "RehanRehnova"
+GITHUB_REPO = "Schools_Management_system"
+VERSION_URL = f"https://raw.githubusercontent.com/{GITHUB_USER}/{GITHUB_REPO}/main/version.txt"
+
+
+#Updater function
+
+@app.route('/check-update')
+def check_update():
+    try:
+        response = requests.get(VERSION_URL, timeout=5)
+        latest = response.text.strip()
+        if latest != CURRENT_VERSION:
+            return jsonify({'update_available': True, 'latest': latest})
+        return jsonify({'update_available': False})
+    except:
+        return jsonify({'update_available': False})
+        
+
+def get_latest_version():
+    try:
+        response = requests.get(VERSION_URL, timeout=5)
+        return response.text.strip()
+    except:
+        return None
+
+def get_download_url():
+    base = f"https://github.com/{GITHUB_USER}/{GITHUB_REPO}/releases/latest/download"
+    system = platform.system()
+    if system == "Windows":
+        return f"{base}/app.exe"
+    elif system == "Linux":
+        return f"{base}/app"
+    return None
+
+def download_and_update(new_version):
+    try:
+        download_url = get_download_url()
+        if not download_url:
+            return
+        exe_path = sys.executable
+        new_exe_path = exe_path + ".new"
+        backup_path = exe_path + ".backup"
+        response = requests.get(download_url, stream=True, timeout=60)
+        with open(new_exe_path, 'wb') as f:
+            for chunk in response.iter_content(chunk_size=8192):
+                f.write(chunk)
+        if os.path.exists(backup_path):
+            os.remove(backup_path)
+        os.rename(exe_path, backup_path)
+        os.rename(new_exe_path, exe_path)
+        if platform.system() == "Linux":
+            os.chmod(exe_path, 0o755)
+            os.execv(exe_path, [exe_path])
+        else:
+            subprocess.Popen([exe_path])
+            sys.exit()
+    except Exception as e:
+        print(f"Update failed: {e}")
+        if os.path.exists(new_exe_path):
+            os.remove(new_exe_path)
+        if os.path.exists(backup_path):
+            os.rename(backup_path, exe_path)
+            
+
 # cloudinary configuration 
 cloudinary.config(
     cloud_name="dhcayqpqr",
     api_key="112842994958122",
     api_secret="qGiPvNxI2gddK2QfGbMhEUyTpbM"
 )
-
-
 
 
 
