@@ -1,17 +1,10 @@
 import sys
 import os
-
-def resource_path(relative_path):
-    if hasattr(sys, '_MEIPASS'):
-        return os.path.join(sys._MEIPASS, relative_path)
-    return os.path.join(os.path.abspath("."), relative_path)
-
 import requests
 import subprocess
 import threading
 import webbrowser
 from threading import Timer
-
 import platform
 import cloudinary
 import cloudinary.uploader
@@ -41,6 +34,16 @@ def get_download_url():
         return f"{base}/app-mac"
     else:
         return None
+        
+        
+def check_for_updates():
+	try:
+		response= requests.get(VERSION_URL, timeout=5)
+		latest_version= response.text.strip()
+		if latest_version != CURRENT_VERSION:
+			download_and_update(latest_version)
+	except:
+		pass
 
 def download_and_update(new_version):
     try:
@@ -78,6 +81,12 @@ def download_and_update(new_version):
         print(f"Update failed: {e}")
         if os.path.exists(backup_path):
             os.rename(backup_path, exe_path)
+            
+    
+def resource_path(relative_path):
+    if hasattr(sys, '_MEIPASS'):
+        return os.path.join(sys._MEIPASS, relative_path)
+    return os.path.join(os.path.abspath("."), relative_path)
 
 #for static files path
 
