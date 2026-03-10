@@ -1,4 +1,4 @@
-name: Build and Release Windows EXE
+name: Build and Release
 
 on:
   push:
@@ -7,13 +7,10 @@ on:
 jobs:
   build-windows:
     runs-on: windows-latest
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
 
@@ -23,7 +20,7 @@ jobs:
       - name: Install PyInstaller
         run: pip install pyinstaller
 
-      - name: Build EXE
+      - name: Build Windows EXE
         run: |
           pyinstaller --onefile --noconsole `
           --add-data "templates;templates" `
@@ -38,28 +35,80 @@ jobs:
           --hidden-import cloudinary.uploader `
           app.py
 
+      - name: Upload Windows EXE
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-windows
+          path: dist/app.exe
+
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Install PyInstaller
+        run: pip install pyinstaller
+
+      - name: Build Linux App
+        run: |
+          pyinstaller --onefile \
+          --add-data "templates:templates" \
+          --add-data "static:static" \
+          --add-data "static/assets/images:static/assets/images" \
+          --hidden-import flask \
+          --hidden-import sqlite3 \
+          --hidden-import database \
+          --hidden-import services \
+          --hidden-import init_db \
+          --hidden-import cloudinary \
+          --hidden-import cloudinary.uploader \
+          app.py
+
+      - name: Upload Linux App
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-linux
+          path: dist/app
+
+  create-release:
+    needs: [build-windows, build-linux]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download Windows artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: app-windows
+          path: dist/windows
+
+      - name: Download Linux artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: app-linux
+          path: dist/linux
+
       - name: Get version
         id: get_version
-        shell: bash
         run: |
           VERSION=$(cat version.txt)
           echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
-          echo "Building version $VERSION"
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ steps.get_version.outputs.VERSION }}
           name: Release v${{ steps.get_version.outputs.VERSION }}
-          body: |
-            ## School Management System
-            Version ${{ steps.get_version.outputs.VERSION }}
-            
-            ### Installation
-            1. Download app.exe
-            2. Place school.db next to app.exe
-            3. Double click app.exe
-          files: dist/app.exe
+          files: |
+            dist/windows/app.exe
+            dist/linux/app
           make_latest: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
