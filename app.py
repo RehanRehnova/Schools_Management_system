@@ -16,7 +16,7 @@ app = Flask(__name__)
 
 CORS(app)
 
-CURRENT_VERSION = "1.0.2"
+CURRENT_VERSION = "1.0.4"
 GITHUB_USER = "RehanRehnova"
 GITHUB_REPO = "Schools_Management_system"
 VERSION_URL = f"https://raw.githubusercontent.com/{GITHUB_USER}/{GITHUB_REPO}/main/version.txt"

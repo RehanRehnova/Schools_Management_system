@@ -1704,8 +1704,6 @@ function load_charts(){
 
 }
 
-
-// Checks for update when page loads
 window.addEventListener('load', function() {
     fetch('/check-update')
     .then(r => r.json())
@@ -1714,21 +1712,13 @@ window.addEventListener('load', function() {
             document.getElementById('updateBar').style.display = 'block';
         }
     })
-    .catch(() => {}); // No internet? Skip silently
+    .catch(() => {});
 });
 
 function doUpdate() {
-    // Change bar to show downloading message
-    document.getElementById('updateBar').innerHTML = `
-        ⏳ Downloading update... 
-        Please wait, app will restart automatically.
-    `;
-    
-    // Tell Flask to start downloading
-    fetch('/do-update')
-    .then(r => r.json())
-    .then(data => {
-        console.log(data.message);
-    })
-    .catch(() => {});
+    if(!confirm("App will restart after update. Save your work first. Continue?")) return;
+    document.getElementById('updateButtons').style.display = 'none';
+    document.getElementById('updateProgress').style.display = 'block';
+    document.getElementById('updateMessage').textContent = '⏳ Downloading update...';
+    fetch('/do-update').catch(() => {});
 }
