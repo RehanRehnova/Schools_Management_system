@@ -514,6 +514,7 @@ GROUP BY e.id
        SELECT 
     sr.full_name AS name,
     sr.photo AS picture,
+    sr.contact AS phone,
     e.roll_number AS roll_no,
     e.class_name AS class,
     f.month,

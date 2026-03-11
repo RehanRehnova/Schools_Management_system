@@ -302,7 +302,7 @@ function startUpdate(data) {
     document.getElementById("rollNumber").value = data.roll_number;
     document.getElementById("fatherName").value = data.father_name;
     document.getElementById("session").value = data.session || "N/A";
-    document.getElementById("totalFee").value = data.fee || "N/A";
+    document.getElementById("totalFee").value = data.total_fee || "N/A";
     document.getElementById("phone").value = data.contact;
     document.getElementById("address").value = data.address;
 
@@ -705,10 +705,10 @@ function renderStudentView(responseData) {
         totalPaid += Number(tx.amount) || 0;
     });
     document.getElementById("studentTotalPaid").textContent =
-        totalPaid;
+        "Rs. "+totalPaid;
 
     document.getElementById("studentTotalDue").textContent =
-        student[0].dues;
+        "Rs. "+student[0].dues;
 
 
     let status;
